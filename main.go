@@ -12,7 +12,7 @@ import (
 	"github.com/avast/apkparser"
 )
 
-var dump_badging_output string = `package: name='%s' versionCode='%s' versionName='%s' platformBuildVersionName='%s' platformBuildVersionCode='%s' compileSdkVersion='%s' compileSdkVersionCodename='%s'
+var dump_badging_output_template string = `package: name='%s' versionCode='%s' versionName='%s' platformBuildVersionName='%s' platformBuildVersionCode='%s' compileSdkVersion='%s' compileSdkVersionCodename='%s'
 minSdkVersion:'%s'
 targetSdkVersion:'%s'
 application-label:'%s'
@@ -20,7 +20,7 @@ application: label='%s' icon='%s'
 launchable-activity: name='%s'  label='' icon=''
 `
 
-func makeOutput(template string, manifest *Manifest) string {
+func dumpBadgingOutput(manifest *Manifest) string {
 	var launchableActivity string
 	for _, activity := range manifest.Application.Activity {
 		if (activity.Exported == "true") && (activity.LaunchMode == "2") {
@@ -29,7 +29,7 @@ func makeOutput(template string, manifest *Manifest) string {
 		}
 	}
 
-	return fmt.Sprintf(template, manifest.Package, manifest.VersionCode, manifest.VersionName, manifest.PlatformBuildVersionName,
+	return fmt.Sprintf(dump_badging_output_template, manifest.Package, manifest.VersionCode, manifest.VersionName, manifest.PlatformBuildVersionName,
 		manifest.PlatformBuildVersionCode, manifest.CompileSdkVersion, manifest.CompileSdkVersionCodename, manifest.UsesSdk.MinSdkVersion,
 		manifest.UsesSdk.TargetSdkVersion,
 		manifest.Application.Label, manifest.Application.Label, manifest.Application.Icon,
@@ -88,5 +88,5 @@ func main() {
 		os.Exit(1)
 	}
 
-	fmt.Println(makeOutput(dump_badging_output, manifest))
+	fmt.Println(dumpBadgingOutput(manifest))
 }
