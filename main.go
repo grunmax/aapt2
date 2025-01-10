@@ -36,7 +36,7 @@ func dumpBadgingOutput(manifest *Manifest) string {
 		launchableActivity)
 }
 
-func getManifestData(xmldata []byte) (*Manifest, error) {
+func getManifest(xmldata []byte) (*Manifest, error) {
 	var manifest Manifest
 	err := xml.Unmarshal(xmldata, &manifest)
 	if err != nil {
@@ -83,7 +83,7 @@ func main() {
 		return
 	}
 	data, _ := ioutil.ReadAll(buffer)
-	manifest, err := getManifestData(data)
+	manifest, err := getManifest(data)
 	if err != nil {
 		os.Exit(1)
 	}
