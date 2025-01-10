@@ -76,6 +76,8 @@ func main() {
 
 	if resErr != nil {
 		fmt.Fprintf(os.Stderr, "Failed to parse resources: %s", resErr.Error())
+		os.Exit(1)
+		return
 	}
 	if manErr != nil {
 		fmt.Fprintf(os.Stderr, "Failed to parse AndroidManifest.xml: %s", manErr.Error())
