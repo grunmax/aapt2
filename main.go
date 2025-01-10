@@ -12,14 +12,15 @@ import (
 	"github.com/avast/apkparser"
 )
 
-func DumpBagingtOutput(manifest *Manifest) string {
-	var package_data string = `package: name='%s' versionCode='%s' versionName='%s' platformBuildVersionName='%s' platformBuildVersionCode='%s' compileSdkVersion='%s' compileSdkVersionCodename='%s'
+var dump_badging_output string = `package: name='%s' versionCode='%s' versionName='%s' platformBuildVersionName='%s' platformBuildVersionCode='%s' compileSdkVersion='%s' compileSdkVersionCodename='%s'
 minSdkVersion:'%s'
 targetSdkVersion:'%s'
 application-label:'%s'
 application: label='%s' icon='%s'
 launchable-activity: name='%s'  label='' icon=''
 `
+
+func makeOutput(template string, manifest *Manifest) string {
 	var launchableActivity string
 	for _, activity := range manifest.Application.Activity {
 		if (activity.Exported == "true") && (activity.LaunchMode == "2") {
@@ -28,14 +29,14 @@ launchable-activity: name='%s'  label='' icon=''
 		}
 	}
 
-	return fmt.Sprintf(package_data, manifest.Package, manifest.VersionCode, manifest.VersionName, manifest.PlatformBuildVersionName,
+	return fmt.Sprintf(template, manifest.Package, manifest.VersionCode, manifest.VersionName, manifest.PlatformBuildVersionName,
 		manifest.PlatformBuildVersionCode, manifest.CompileSdkVersion, manifest.CompileSdkVersionCodename, manifest.UsesSdk.MinSdkVersion,
 		manifest.UsesSdk.TargetSdkVersion,
 		manifest.Application.Label, manifest.Application.Label, manifest.Application.Icon,
 		launchableActivity)
 }
 
-func GetManifestData(xmldata []byte) (*Manifest, error) {
+func getManifestData(xmldata []byte) (*Manifest, error) {
 	var manifest Manifest
 	err := xml.Unmarshal(xmldata, &manifest)
 	if err != nil {
@@ -61,9 +62,9 @@ func main() {
 		os.Exit(0)
 	}
 
-	buf := new(bytes.Buffer)
+	buffer := new(bytes.Buffer)
 
-	enc := xml.NewEncoder(buf)
+	enc := xml.NewEncoder(buffer)
 	enc.Indent("", "\t")
 
 	zipErr, resErr, manErr := apkparser.ParseApk(apkName, enc)
@@ -81,11 +82,11 @@ func main() {
 		os.Exit(1)
 		return
 	}
-	readBuf, _ := ioutil.ReadAll(buf)
-	manifest, err := GetManifestData(readBuf)
+	data, _ := ioutil.ReadAll(buffer)
+	manifest, err := getManifestData(data)
 	if err != nil {
 		os.Exit(1)
 	}
 
-	fmt.Println(DumpBagingtOutput(manifest))
+	fmt.Println(makeOutput(dump_badging_output, manifest))
 }
