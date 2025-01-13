@@ -83,7 +83,7 @@ func getManifest(xmldata []byte) (*Manifest, error) {
 
 func main() {
 	if len(os.Args) == 1 {
-		fmt.Println("Aapt2 dump badging v0.1")
+		fmt.Println("Aapt2 dump badging v0.2")
 		os.Exit(0)
 	}
 	apkName := ""
