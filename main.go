@@ -22,10 +22,46 @@ launchable-activity: name='%s'  label='' icon=''
 
 func dumpBadgingOutput(manifest *Manifest) string {
 	var launchableActivity string
+
+	// 1
 	for _, activity := range manifest.Application.Activity {
 		if (activity.Exported == "true") && (activity.LaunchMode == "2") {
 			launchableActivity = activity.Name
 			break
+		}
+	}
+	// 2
+	for _, activity := range manifest.Application.Activity {
+		if (activity.Exported == "true") && (activity.LaunchMode == "1") {
+			launchableActivity = activity.Name
+			break
+		}
+	}
+	// 3
+	if launchableActivity == "" {
+		for _, activity := range manifest.Application.Activity {
+			if activity.Exported == "true" {
+				launchableActivity = activity.Name
+				break
+			}
+		}
+	}
+	// 4
+	if launchableActivity == "" {
+		for _, activity := range manifest.Application.Activity {
+			if strings.Contains(activity.Name, ".Main") {
+				launchableActivity = activity.Name
+				break
+			}
+		}
+	}
+	// 5
+	if launchableActivity == "" {
+		for _, activity := range manifest.Application.Activity {
+			if activity.Name != "" {
+				launchableActivity = activity.Name
+				break
+			}
 		}
 	}
 
